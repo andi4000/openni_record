@@ -1,0 +1,20 @@
+<package>
+  <description brief="openni_record">
+
+     Simple tool to record OpenNI Camera stream
+
+  </description>
+  <author>Ariandy Yoga Benggolo</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_record</url>
+  <depend package="roscpp"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="sensor_msgs"/>
+  <depend package="std_msgs"/>
+  <depend package="image_transport"/>
+
+</package>
+
+
