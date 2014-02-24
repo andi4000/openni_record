@@ -17,16 +17,18 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <ctime>
+
 #define SENSOR_MIN_RANGE 0.5
 #define SENSOR_MAX_RANGE 5
 
 namespace enc = sensor_msgs::image_encodings;
 
 static const char WINDOW[] = "DEPTH";
-//std::string outputFile = ros::package::getPath("openni_record") + "/youbot_openni_depth.avi";
+//std::string g_outputFile = ros::package::getPath("openni_record") + "/youbot_openni_depth.avi";
 //std::string filename = "/youbot_openni_depth.avi";
-std::string fullpath = "/home/ariandy/youbot_openni_depth.avi";
-static const char* outputFile = fullpath.c_str();
+//std::string fullpath = "/home/ariandy/youbot_openni_depth.avi";
+//static const char* g_outputFile = fullpath.c_str();
 
 class ImageConverter
 {
@@ -36,20 +38,25 @@ class ImageConverter
 	
 	cv::VideoWriter outputVideo;
 	
+	char* m_fileName;
+	bool m_display;
+	
 	public:
-		ImageConverter():it_(nh_){
+		ImageConverter(char* fileName, bool display):it_(nh_), m_fileName(fileName), m_display(display){
 			image_sub_ = it_.subscribe("/camera/depth/image", 1, &ImageConverter::imageCb, this);
-			cv::namedWindow(WINDOW);
+			if (m_display)
+				cv::namedWindow(WINDOW);
 
 			//TODO: file path location 
 			//std::string fullpath = ros::package::getPath("openni_record") + filename;
-			//outputFile = fullpath.c_str();
+			//g_outputFile = fullpath.c_str();
 			
 			//TODO: cant get this from input video since its not yet converted
-			outputVideo.open(outputFile, CV_FOURCC('P','I','M','1'), 30, cv::Size(640, 480), false);
+			outputVideo.open(m_fileName, CV_FOURCC('P','I','M','1'), 30, cv::Size(640, 480), false);
 		}
 		~ImageConverter(){
-			cv::destroyWindow(WINDOW);
+			if (m_display)
+				cv::destroyWindow(WINDOW);
 		}
 		
 		void imageCb(const sensor_msgs::ImageConstPtr& msg){
@@ -77,16 +84,27 @@ class ImageConverter
 			if (outputVideo.isOpened()){
 				outputVideo.write(scaledMat);
 			} else {
-				ROS_ERROR("ERROR: can't write to %s", outputFile);
+				ROS_ERROR("ERROR: can't write to %s", m_fileName);
 				return;
 			}
-
-			cv::imshow(WINDOW, scaledMat);
-			cv::waitKey(3);
+			if (m_display){
+				cv::imshow(WINDOW, scaledMat);
+				cv::waitKey(3);
+			}
 		}
 };
 
 int main(int argc, char** argv){
+	bool show = false;
+	
+	time_t rawtime;
+	struct tm* timeinfo;
+	char filename[80];
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(filename, 80, "openni_depth_%Y-%m-%d_%H-%M.avi", timeinfo);
+	
 	ros::init(argc, argv, "openni_record_depth");
 	ROS_INFO("depth recording will start in 5 seconds ...");
 	ros::Time::init();
@@ -94,8 +112,9 @@ int main(int argc, char** argv){
 	ROS_INFO("... and ...");
 	ros::Duration(1).sleep();
 	ROS_INFO("now!");
+	ROS_WARN("Recording to: %s", filename);
 	
-	ImageConverter ic;
+	ImageConverter ic(filename, show);
 	ros::spin();
 	
 	return 0;

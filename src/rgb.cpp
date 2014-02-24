@@ -19,8 +19,8 @@
 namespace enc = sensor_msgs::image_encodings;
 
 static const char WINDOW[] = "RGB";
-//std::string outputFile = ros::package::getPath("openni_record") + "/youbot_openni_rgb.avi";
-static const char outputFile[] = "/home/ariandy/youbot_openni_rgb.avi";
+//std::string g_outputFile = ros::package::getPath("openni_record") + "/youbot_openni_rgb.avi";
+static const char g_outputFile[] = "/home/ariandy/youbot_openni_rgb.avi";
 
 class ImageConverter
 {
@@ -35,7 +35,7 @@ class ImageConverter
 			image_sub_ = it_.subscribe("/camera/rgb/image_color", 1, &ImageConverter::imageCb, this);
 			cv::namedWindow(WINDOW);
 			//TODO: cant get this from input video since its not yet converted
-			outputVideo.open(outputFile, CV_FOURCC('P','I','M','1'), 30, cv::Size(640, 480), true);
+			outputVideo.open(g_outputFile, CV_FOURCC('P','I','M','1'), 30, cv::Size(640, 480), true);
 		}
 		~ImageConverter(){
 			cv::destroyWindow(WINDOW);
@@ -54,13 +54,13 @@ class ImageConverter
 			if (outputVideo.isOpened()){
 				outputVideo.write(cv_ptr->image);
 			} else {
-				ROS_ERROR("ERROR: can't write to %s", outputFile);
+				ROS_ERROR("ERROR: can't write to %s", g_outputFile);
 				return;
 			}
 			
 			
-			cv::imshow(WINDOW, cv_ptr->image);
-			cv::waitKey(3);
+			//cv::imshow(WINDOW, cv_ptr->image);
+			//cv::waitKey(3);
 		}
 };
 
