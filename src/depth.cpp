@@ -25,10 +25,6 @@
 namespace enc = sensor_msgs::image_encodings;
 
 static const char WINDOW[] = "DEPTH";
-//std::string g_outputFile = ros::package::getPath("openni_record") + "/youbot_openni_depth.avi";
-//std::string filename = "/youbot_openni_depth.avi";
-//std::string fullpath = "/home/ariandy/youbot_openni_depth.avi";
-//static const char* g_outputFile = fullpath.c_str();
 
 class ImageConverter
 {
@@ -95,6 +91,8 @@ class ImageConverter
 };
 
 int main(int argc, char** argv){
+	ros::init(argc, argv, "openni_record_depth");
+	
 	bool show = false;
 	
 	time_t rawtime;
@@ -103,9 +101,8 @@ int main(int argc, char** argv){
 
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
-	strftime(filename, 80, "openni_depth_%Y-%m-%d_%H-%M.avi", timeinfo);
+	strftime(filename, 80, "./openni_depth_%Y-%m-%d_%H-%M.avi", timeinfo);
 	
-	ros::init(argc, argv, "openni_record_depth");
 	ROS_INFO("depth recording will start in 5 seconds ...");
 	ros::Time::init();
 	ros::Duration(4).sleep();

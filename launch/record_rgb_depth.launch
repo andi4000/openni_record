@@ -1,7 +1,7 @@
 <launch>
 	<include file="$(find openni_launch)/launch/openni.launch" />
-	
-	<node name="rgb" pkg="openni_record" type="rgb" output="screen"/>
-	<node name="depth" pkg="openni_record" type="depth" output="screen"/>
+	<env name="CWD" value="$(env PWD)" />	
+	<node name="rgb" pkg="openni_record" type="rgb" output="screen" />
+	<node name="depth" pkg="openni_record" type="depth" output="screen" />
 	
 </launch>
